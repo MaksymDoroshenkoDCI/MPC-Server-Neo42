@@ -188,6 +188,9 @@ if prompt := st.chat_input("Ask about packages, servers or rentals..."):
                     tool_context = ""
                     if "status" in prompt.lower() or "pipeline" in prompt.lower():
                         tool_context = asyncio.run(call_mcp_tool("get_recent_pipelines"))
+                    elif "telemetry" in prompt.lower() or "cpu" in prompt.lower() or "usage" in prompt.lower():
+                        # Demo: Defaulting to SRV-PROD-01 for telemetry queries
+                        tool_context = asyncio.run(call_mcp_tool("get_server_telemetry", {"hostname": "SRV-PROD-01"}))
                     elif "rental" in prompt.lower() or "notebook" in prompt.lower():
                         tool_context = asyncio.run(call_mcp_tool("check_rental_availability"))
                     elif "license" in prompt.lower():

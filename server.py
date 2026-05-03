@@ -1,6 +1,10 @@
 import sqlite3
 from fastmcp import FastMCP
 import logging
+import mongodb_mock
+
+# Initialize MongoDB mock data
+mongodb_mock.init_mongodb()
 
 # Initialize FastMCP server
 mcp = FastMCP("Neo42 Application Package Center")
@@ -139,6 +143,20 @@ def check_license_compliance(package_name: str) -> str:
         return status
     else:
         return f"No license data found for package '{package_name}'."
+
+@mcp.tool()
+def get_server_telemetry(hostname: str) -> str:
+    """
+    Fetch real-time telemetry (CPU, Memory, Processes) from MongoDB for a specific server.
+    
+    Args:
+        hostname: The hostname of the server.
+    """
+    telemetry = mongodb_mock.get_telemetry(hostname)
+    if telemetry:
+        return f"Real-time Telemetry for {hostname} (from MongoDB):\n{telemetry}"
+    else:
+        return f"No telemetry data available for {hostname} in MongoDB."
 
 @mcp.tool()
 def get_recent_pipelines() -> str:
