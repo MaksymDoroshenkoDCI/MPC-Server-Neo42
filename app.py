@@ -15,25 +15,44 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for Premium Look
+# Custom CSS for Neo42 Red/Black Theme
 st.markdown("""
     <style>
-    .main {
-        background-color: #f8f9fa;
+    .stApp {
+        background-color: #f0f2f6;
     }
-    .stMetric {
+    [data-testid="stMetric"] {
         background-color: #ffffff;
         padding: 20px;
         border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        border-left: 5px solid #d71920;
     }
-    .stSidebar {
-        background-color: #1e3a8a;
+    h1, h2, h3 {
+        color: #1a1a1a !important;
+        font-family: 'Helvetica Neue', sans-serif;
+    }
+    .stChatFloatingInputContainer {
+        background-color: #f0f2f6;
+    }
+    [data-testid="stSidebar"] {
+        background-color: #1a1a1a;
+    }
+    [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] p {
+        color: #ffffff !important;
     }
     .stButton>button {
-        background-color: #3b82f6;
+        background-color: #d71920;
         color: white;
-        border-radius: 5px;
+        border: none;
+    }
+    .stButton>button:hover {
+        background-color: #b3151a;
+        color: white;
+    }
+    /* Red icons for metrics */
+    [data-testid="stMetricValue"] {
+        color: #d71920 !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -60,8 +79,12 @@ async def call_mcp_tool(tool_name, arguments={}):
 
 # --- SIDEBAR ---
 with st.sidebar:
-    st.image("https://neo42.de/wp-content/uploads/2021/10/neo42-logo-white.svg", width=150)
-    st.title("Neo42 AI Copilot")
+    if os.path.exists("neo42_logo.png"):
+        st.image("neo42_logo.png", width=200)
+    else:
+        st.title("neo42") # Fallback text
+    
+    st.markdown("<h3 style='color: #d71920;'>AI Copilot</h3>", unsafe_allow_html=True)
     st.info("Connected to Application Package Center & SMD")
     
     st.subheader("System Status")
