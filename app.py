@@ -63,6 +63,10 @@ st.markdown("""
         color: #1a1a1a !important;
         font-weight: bold !important;
     }
+    /* Black text for chat messages */
+    [data-testid="stChatMessage"] p {
+        color: #000000 !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
