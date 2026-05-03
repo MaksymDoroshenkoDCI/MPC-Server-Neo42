@@ -1,0 +1,165 @@
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+import sqlite3
+import asyncio
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
+import os
+
+# Page Configuration
+st.set_page_config(
+    page_title="Neo42 AI Management Dashboard",
+    page_icon="🤖",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# Custom CSS for Premium Look
+st.markdown("""
+    <style>
+    .main {
+        background-color: #f8f9fa;
+    }
+    .stMetric {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .stSidebar {
+        background-color: #1e3a8a;
+    }
+    .stButton>button {
+        background-color: #3b82f6;
+        color: white;
+        border-radius: 5px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# Database Helper
+def get_db_data(query):
+    conn = sqlite3.connect("neo42_apc.db")
+    df = pd.read_sql_query(query, conn)
+    conn.close()
+    return df
+
+# MCP Client Wrapper (Async)
+async def call_mcp_tool(tool_name, arguments={}):
+    server_params = StdioServerParameters(
+        command="venv/bin/python",
+        args=["server.py"],
+        env=None
+    )
+    async with stdio_client(server_params) as (read, write):
+        async with ClientSession(read, write) as session:
+            await session.initialize()
+            result = await session.call_tool(tool_name, arguments)
+            return result.content[0].text
+
+# --- SIDEBAR ---
+with st.sidebar:
+    st.image("https://neo42.de/wp-content/uploads/2021/10/neo42-logo-white.svg", width=150)
+    st.title("Neo42 AI Copilot")
+    st.info("Connected to Application Package Center & SMD")
+    
+    st.subheader("System Status")
+    st.success("MCP Server: Online")
+    st.success("Database: Connected")
+    
+    if st.button("Refresh Data"):
+        st.rerun()
+
+# --- MAIN DASHBOARD ---
+st.title("🚀 Neo42 Infrastructure Overview")
+
+# Top Row: KPI Metrics
+col1, col2, col3, col4 = st.columns(4)
+
+endpoints_count = get_db_data("SELECT COUNT(*) as count FROM endpoints")["count"][0]
+packages_count = get_db_data("SELECT COUNT(*) as count FROM packages")["count"][0]
+failed_deployments = get_db_data("SELECT COUNT(*) as count FROM deployments WHERE status = 'Failed'")["count"][0]
+available_rentals = get_db_data("SELECT SUM(available_quantity) as sum FROM rentals")["sum"][0]
+
+with col1:
+    st.metric("Total Endpoints", endpoints_count, "Active")
+with col2:
+    st.metric("Managed Packages", packages_count)
+with col3:
+    st.metric("Deployment Errors", failed_deployments, delta="-2 since yesterday", delta_color="inverse")
+with col4:
+    st.metric("Rental Assets", int(available_rentals), "Units Available")
+
+st.divider()
+
+# Middle Row: Charts & Data
+left_col, right_col = st.columns([2, 1])
+
+with left_col:
+    st.subheader("📊 Deployment Status by Location")
+    status_df = get_db_data("""
+        SELECT e.location, d.status, COUNT(*) as count 
+        FROM deployments d 
+        JOIN endpoints e ON d.endpoint_id = e.id 
+        GROUP BY e.location, d.status
+    """)
+    fig = px.bar(status_df, x="location", y="count", color="status", barmode="group",
+                 color_discrete_map={'Success': '#10b981', 'Failed': '#ef4444', 'In Progress': '#f59e0b'})
+    st.plotly_chart(fig, use_container_width=True)
+
+with right_col:
+    st.subheader("⚠️ Critical Alerts")
+    # License Alerts
+    license_df = get_db_data("""
+        SELECT p.name, l.purchased_count, COUNT(d.id) as deployed 
+        FROM packages p 
+        JOIN licenses l ON p.id = l.package_id 
+        LEFT JOIN deployments d ON p.id = d.package_id AND d.status = 'Success'
+        GROUP BY p.name
+    """)
+    for index, row in license_df.iterrows():
+        if row['deployed'] >= row['purchased_count'] * 0.8:
+            st.warning(f"License Limit: {row['name']} ({row['deployed']}/{row['purchased_count']})")
+
+# Bottom Section: AI Chat Agent
+st.divider()
+st.subheader("💬 Neo42 AI Assistant (LangGraph + MCP)")
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# Display chat messages
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+# Chat Input
+if prompt := st.chat_input("Ask about packages, servers or rentals..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.chat_message("assistant"):
+        with st.spinner("Analyzing Neo42 Infrastructure..."):
+            # Logic to determine which MCP tool to call based on keywords
+            try:
+                response = ""
+                if "status" in prompt.lower() or "server" in prompt.lower():
+                    # Simplified logic for demo: try to find package and hostname in prompt
+                    # In a real LangGraph setup, the LLM would do this extraction
+                    response = asyncio.run(call_mcp_tool("get_recent_pipelines"))
+                elif "rental" in prompt.lower() or "notebook" in prompt.lower():
+                    response = asyncio.run(call_mcp_tool("check_rental_availability"))
+                elif "license" in prompt.lower():
+                    response = asyncio.run(call_mcp_tool("check_license_compliance", {"package_name": "Adobe"}))
+                else:
+                    response = "I can help you check deployment status, rental availability, or license compliance. For example, try asking: 'Show rental availability' or 'Recent pipelines'."
+                
+                st.markdown(response)
+                st.session_state.messages.append({"role": "assistant", "content": response})
+            except Exception as e:
+                st.error(f"Error connecting to MCP Server: {e}")
+
+st.sidebar.markdown("---")
+st.sidebar.caption("Neo42 GmbH Interview Demo v1.0")
