@@ -35,6 +35,7 @@ def init_db():
         endpoint_id INTEGER,
         status TEXT,
         last_updated DATETIME DEFAULT CURRENT_TIMESTAMP,
+        last_used DATETIME,
         error_log TEXT,
         FOREIGN KEY (package_id) REFERENCES packages(id),
         FOREIGN KEY (endpoint_id) REFERENCES endpoints(id)
@@ -106,15 +107,16 @@ def init_db():
     ]
     cursor.executemany("INSERT OR IGNORE INTO licenses (package_id, purchased_count) VALUES (?, ?)", licenses)
 
-    # Seed deployments
+    # Seed deployments (PackageID, EndpointID, Status, LastUsed, ErrorLog)
     deployments = [
-        (1, 1, "Success", None),
-        (2, 1, "Success", None),
-        (3, 1, "Failed", "Error: 0x80070005 - Access Denied"),
-        (1, 2, "Success", None),
-        (3, 3, "In Progress", None)
+        (1, 1, "Success", "2026-05-01", None),
+        (2, 1, "Success", "2026-04-15", None),
+        (3, 1, "Failed", None, "Error: 0x80070005 - Access Denied"),
+        (1, 2, "Success", "2026-02-01", None), # Old usage! Reclaimable
+        (4, 2, "Success", "2026-01-10", None), # Old usage! Reclaimable
+        (3, 3, "In Progress", None, None)
     ]
-    cursor.executemany("INSERT INTO deployments (package_id, endpoint_id, status, error_log) VALUES (?, ?, ?, ?)", deployments)
+    cursor.executemany("INSERT INTO deployments (package_id, endpoint_id, status, last_used, error_log) VALUES (?, ?, ?, ?, ?)", deployments)
 
     conn.commit()
     conn.close()

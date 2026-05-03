@@ -159,6 +159,59 @@ def get_server_telemetry(hostname: str) -> str:
         return f"No telemetry data available for {hostname} in MongoDB."
 
 @mcp.tool()
+def identify_reclaimable_licenses(days_inactive: int = 30) -> str:
+    """
+    Identifies software licenses that can be reclaimed because they haven't been used recently.
+    
+    Args:
+        days_inactive: Number of days of inactivity to consider for reclamation.
+    """
+    conn = get_db_connection()
+    query = """
+    SELECT p.name, e.hostname, d.last_used
+    FROM deployments d
+    JOIN packages p ON d.package_id = p.id
+    JOIN endpoints e ON d.endpoint_id = e.id
+    WHERE d.last_used < date('now', '-' || ? || ' days') AND d.status = 'Success'
+    """
+    rows = conn.execute(query, (days_inactive,)).fetchall()
+    conn.close()
+
+    if rows:
+        lines = [f"- {row['name']} on {row['hostname']} (Last used: {row['last_used']})" for row in rows]
+        return f"Found {len(rows)} reclaimable licenses (inactive for >{days_inactive} days):\n" + "\n".join(lines)
+    else:
+        return f"No reclaimable licenses found for the given threshold."
+
+@mcp.tool()
+def start_employee_onboarding(employee_name: str, department: str) -> str:
+    """
+    Initiates the onboarding process for a new employee.
+    Performs package assignment, checks asset availability, and creates setup tasks.
+    
+    Args:
+        employee_name: Full name of the new employee.
+        department: Department (e.g., 'IT', 'Sales').
+    """
+    # In a real system, this would write to multiple tables.
+    # For the demo, we return a structured execution plan.
+    plan = f"Onboarding Process Started for: {employee_name} ({department})\n"
+    plan += "--------------------------------------------------\n"
+    plan += "1. [Task] Creating Matrix42 Person Object: COMPLETED\n"
+    plan += "2. [Asset] Checking Notebook Availability: 3 units found (Reserved 1)\n"
+    
+    if department == "IT":
+        plan += "3. [Package] Assigning 'Visual Studio Code' & 'Neo42 Agent': QUEUED\n"
+    else:
+        plan += "3. [Package] Assigning 'Microsoft Teams' & 'Adobe Acrobat': QUEUED\n"
+        
+    plan += "4. [License] Checking Compliance: All compliant.\n"
+    plan += "5. [Notification] Sending Welcome Email: SCHEDULED\n"
+    plan += "--------------------------------------------------\n"
+    plan += "Result: Workflow initiated successfully. Reference ID: ONB-2026-001"
+    return plan
+
+@mcp.tool()
 def get_recent_pipelines() -> str:
     """
     Retrieves the status of recent deployment pipelines.
