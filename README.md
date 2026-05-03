@@ -1,6 +1,6 @@
 # Neo42 MCP Server – AI-Driven ESM & UEM Orchestration
 
-Dieses Projekt ist ein hochmoderner **Model Context Protocol (MCP) Server**, der speziell für die Anforderungen von **Neo42** entwickelt wurde. Er kombiniert die Power von **Gemini 1.5 Flash**, **LangGraph** und **MCP**, um eine intelligente Schnittstelle für das Matrix42-Ökosystem zu schaffen.
+Dieses Projekt ist ein hochmoderner **Model Context Protocol (MCP) Server**, der speziell für die Anforderungen von **Neo42** entwickelt wurde. Er kombiniert die Power von **Gemini 2.5 Flash**, **LangGraph** und **MCP**, um eine intelligente Schnittstelle für das Matrix42-Ökosystem zu schaffen.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
@@ -45,7 +45,7 @@ Der Server bietet fortschrittliche Tools, die weit über einfache Datenbankabfra
    ```bash
    python3 -m venv venv
    source venv/bin/activate
-   pip install fastmcp sqlite3 mongomock streamlit pandas plotly langchain-google-genai langgraph
+   pip install fastmcp sqlite3 mongomock streamlit pandas plotly langchain-google-genai langgraph python-dotenv
    ```
 
 3. **Datenbanken initialisieren**:
