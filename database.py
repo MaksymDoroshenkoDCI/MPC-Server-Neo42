@@ -52,6 +52,15 @@ def init_db():
     )
     ''')
 
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS rentals (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        asset_type TEXT NOT NULL,
+        total_quantity INTEGER,
+        available_quantity INTEGER
+    )
+    ''')
+
     # Seed data
     packages = [
         ("Adobe Acrobat Reader", "2024.001", "Office"),
@@ -69,6 +78,15 @@ def init_db():
         ("WS-SUP-01", "Windows 10", "10.0.2.5", "Berlin")
     ]
     cursor.executemany("INSERT OR IGNORE INTO endpoints (hostname, os, ip_address, location) VALUES (?, ?, ?, ?)", endpoints)
+
+    # Seed rentals
+    rentals = [
+        ("Notebook (High Performance)", 10, 3),
+        ("Projector", 5, 5),
+        ("Virtual Machine (Standard)", 50, 12),
+        ("Testing Phone (iOS)", 8, 2)
+    ]
+    cursor.executemany("INSERT OR IGNORE INTO rentals (asset_type, total_quantity, available_quantity) VALUES (?, ?, ?)", rentals)
 
     # Seed deployments
     deployments = [

@@ -86,6 +86,29 @@ def search_packages(query: str) -> str:
         return f"No packages found matching '{query}'."
 
 @mcp.tool()
+def check_rental_availability(asset_type: str = None) -> str:
+    """
+    Check the availability of rental assets (e.g., Notebooks, Projectors).
+    
+    Args:
+        asset_type: Optional filter for a specific type of asset.
+    """
+    conn = get_db_connection()
+    if asset_type:
+        query = "SELECT asset_type, total_quantity, available_quantity FROM rentals WHERE asset_type LIKE ?"
+        rows = conn.execute(query, (f"%{asset_type}%",)).fetchall()
+    else:
+        query = "SELECT asset_type, total_quantity, available_quantity FROM rentals"
+        rows = conn.execute(query).fetchall()
+    conn.close()
+
+    if rows:
+        lines = [f"- {row['asset_type']}: {row['available_quantity']} available (out of {row['total_quantity']})" for row in rows]
+        return "Rental Asset Availability:\n" + "\n".join(lines)
+    else:
+        return f"No rental assets found matching '{asset_type or 'all'}'."
+
+@mcp.tool()
 def get_recent_pipelines() -> str:
     """
     Retrieves the status of recent deployment pipelines.

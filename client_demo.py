@@ -36,7 +36,12 @@ async def run_demo():
             result = await session.call_tool("list_server_inventory", arguments={"hostname": "SRV-PROD-01"})
             print(f"Result: {result.content[0].text}\n")
 
-            # 4. Get recent pipelines
+            # 4. Check rental availability
+            print("Action: Checking availability of 'Notebooks'...")
+            result = await session.call_tool("check_rental_availability", arguments={"asset_type": "Notebook"})
+            print(f"Result: {result.content[0].text}\n")
+
+            # 5. Get recent pipelines
             print("Action: Fetching recent pipelines...")
             result = await session.call_tool("get_recent_pipelines", arguments={})
             print(f"Result: {result.content[0].text}\n")
