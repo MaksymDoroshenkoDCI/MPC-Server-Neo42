@@ -54,6 +54,10 @@ st.markdown("""
     [data-testid="stMetricValue"] {
         color: #d71920 !important;
     }
+    [data-testid="stMetricLabel"] {
+        color: #1a1a1a !important;
+        font-weight: bold !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
