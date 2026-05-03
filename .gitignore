@@ -4,3 +4,4 @@ __pycache__/
 .DS_Store
 # neo42_apc.db  # Keeping this for now since it's a demo repo, but normally ignored
 presentation_pitch.txt
+.env

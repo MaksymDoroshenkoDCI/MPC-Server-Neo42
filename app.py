@@ -8,6 +8,10 @@ from mcp.client.stdio import stdio_client
 import os
 from langgraph_agent import build_neo42_agent
 from langchain_core.messages import HumanMessage
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Page Configuration
 st.set_page_config(
@@ -93,7 +97,8 @@ with st.sidebar:
     st.info("Connected to Application Package Center & SMD")
     
     # API Key Input
-    api_key = st.text_input("Google API Key", type="password")
+    default_key = os.getenv("GOOGLE_API_KEY", "")
+    api_key = st.text_input("Google API Key", value=default_key, type="password")
     if not api_key:
         st.warning("Please enter your Google API Key to enable AI chat.")
 
