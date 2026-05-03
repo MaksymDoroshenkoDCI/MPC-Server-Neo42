@@ -109,6 +109,38 @@ def check_rental_availability(asset_type: str = None) -> str:
         return f"No rental assets found matching '{asset_type or 'all'}'."
 
 @mcp.tool()
+def check_license_compliance(package_name: str) -> str:
+    """
+    Check if the number of deployments for a package exceeds purchased licenses.
+    
+    Args:
+        package_name: The name of the package to check.
+    """
+    conn = get_db_connection()
+    query = """
+    SELECT p.name, l.purchased_count, COUNT(d.id) as deployed_count
+    FROM packages p
+    JOIN licenses l ON p.id = l.package_id
+    LEFT JOIN deployments d ON p.id = d.package_id AND d.status = 'Success'
+    WHERE p.name LIKE ?
+    GROUP BY p.id
+    """
+    row = conn.execute(query, (f"%{package_name}%",)).fetchone()
+    conn.close()
+
+    if row:
+        name, purchased, deployed = row['name'], row['purchased_count'], row['deployed_count']
+        compliance = "COMPLIANT" if deployed <= purchased else "NON-COMPLIANT"
+        status = f"License Status for '{name}': {compliance}\n"
+        status += f"- Purchased: {purchased}\n"
+        status += f"- Deployed: {deployed}\n"
+        if deployed > purchased:
+            status += f"WARNING: Over-licensed by {deployed - purchased} units!"
+        return status
+    else:
+        return f"No license data found for package '{package_name}'."
+
+@mcp.tool()
 def get_recent_pipelines() -> str:
     """
     Retrieves the status of recent deployment pipelines.

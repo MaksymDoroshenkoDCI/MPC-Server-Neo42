@@ -41,7 +41,12 @@ async def run_demo():
             result = await session.call_tool("check_rental_availability", arguments={"asset_type": "Notebook"})
             print(f"Result: {result.content[0].text}\n")
 
-            # 5. Get recent pipelines
+            # 5. Check license compliance
+            print("Action: Checking license compliance for 'Adobe Acrobat'...")
+            result = await session.call_tool("check_license_compliance", arguments={"package_name": "Adobe Acrobat"})
+            print(f"Result: {result.content[0].text}\n")
+
+            # 6. Get recent pipelines
             print("Action: Fetching recent pipelines...")
             result = await session.call_tool("get_recent_pipelines", arguments={})
             print(f"Result: {result.content[0].text}\n")

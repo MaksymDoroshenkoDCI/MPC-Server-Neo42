@@ -61,6 +61,15 @@ def init_db():
     )
     ''')
 
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS licenses (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        package_id INTEGER,
+        purchased_count INTEGER,
+        FOREIGN KEY (package_id) REFERENCES packages(id)
+    )
+    ''')
+
     # Seed data
     packages = [
         ("Adobe Acrobat Reader", "2024.001", "Office"),
@@ -87,6 +96,15 @@ def init_db():
         ("Testing Phone (iOS)", 8, 2)
     ]
     cursor.executemany("INSERT OR IGNORE INTO rentals (asset_type, total_quantity, available_quantity) VALUES (?, ?, ?)", rentals)
+
+    # Seed licenses
+    licenses = [
+        (1, 100), # Adobe Acrobat: 100 licenses
+        (2, 500), # Chrome: 500 licenses
+        (3, 10),  # Neo42 Agent: 10 licenses (will show near limit)
+        (4, 50)   # Teams: 50 licenses
+    ]
+    cursor.executemany("INSERT OR IGNORE INTO licenses (package_id, purchased_count) VALUES (?, ?)", licenses)
 
     # Seed deployments
     deployments = [
