@@ -1,37 +1,39 @@
-# Neo42 MCP Server – Application Package Center & ESM Integration
+# Neo42 MCP Server – AI-Driven ESM & UEM Orchestration
 
-Dieses Projekt ist ein **Model Context Protocol (MCP) Server**, der speziell für die Ökosysteme von **Neo42** entwickelt wurde. Er ermöglicht KI-Agenten (wie Claude oder LangGraph-basierte Bots), direkt mit dem **Application Package Center (APC)** und dem **Service Management Depot (SMD)** zu interagieren.
+Dieses Projekt ist ein hochmoderner **Model Context Protocol (MCP) Server**, der speziell für die Anforderungen von **Neo42** entwickelt wurde. Er kombiniert die Power von **Gemini 1.5 Flash**, **LangGraph** und **MCP**, um eine intelligente Schnittstelle für das Matrix42-Ökosystem zu schaffen.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![MCP](https://img.shields.io/badge/MCP-Model%20Context%20Protocol-orange)](https://modelcontextprotocol.io)
 
-## 🚀 Überblick
+## 🚀 Key Features & Business Logic
 
-Der Neo42 MCP Server schließt die Lücke zwischen Large Language Models (LLMs) und der internen IT-Infrastrukturverwaltung. Anstatt manuell in Dashboards zu suchen, können Support-Mitarbeiter oder Kunden einfach natürliche Sprache verwenden, um komplexe Abfragen zu Deployment-Status, Inventar oder Lizenz-Compliance zu stellen.
+Der Server bietet fortschrittliche Tools, die weit über einfache Datenbankabfragen hinausgehen:
 
-## ✨ Hauptfunktionen
+### 🛠 Business Automation
+- **Automatisches Onboarding**: Ein einziger Befehl initiiert den kompletten Onboarding-Prozess – von der Personalanlage in Matrix42 über die Hardware-Reservierung bis hin zur Software-Zuweisung (IT vs. Sales Profile).
+- **Lizenz-Optimierung (Reclamation)**: Identifiziert ungenutzte Software-Lizenzen (Inaktivität > 30 Tage), um proaktiv Kosten zu senken und die Compliance sicherzustellen.
 
-### 📦 Application Package Center (APC)
-- **Deployment-Status**: Abfrage des Echtzeit-Status von Softwarepaketen auf spezifischen Endpoints (z. B. "Ist Google Chrome auf SRV-PROD-01 erfolgreich installiert?").
-- **Server-Inventar**: Auflistung aller verwalteten Pakete auf einem bestimmten Host.
-- **Paketsuche**: Schnelles Auffinden von verfügbaren Softwarepaketen im Repository.
+### 📊 Multi-Source Data Integration
+- **Hybrid Database Engine**: Kombiniert strukturierte Asset-Daten aus **SQLite** mit unstrukturierten Telemetrie-Logs aus **MongoDB**.
+- **Real-time Telemetry**: Abfrage von CPU-Last, RAM-Verbrauch und aktiven Prozessen direkt über MongoDB-Mocks.
 
-### 🏢 Service Management Depot (SMD) Integration
-- **Asset Rental Management**: Prüfung der Verfügbarkeit von Leihgeräten wie Hochleistungs-Notebooks, Beamern oder Testgeräten.
-- **Lizenz-Compliance**: Automatisierter Abgleich zwischen installierten Software-Instanzen und erworbenen Lizenzen, um Überlizenzierung oder Compliance-Risiken zu vermeiden.
+### 🧠 Intelligenter KI-Copilot
+- **Gemini + LangGraph**: Ein KI-Agent, der den Kontext versteht. Er erkennt, ob er technische Logs analysieren, Bestände prüfen oder Lizenz-Compliance-Berichte erstellen soll.
+- **Interaktives Dashboard**: Ein premium **Streamlit-Dashboard** im Neo42-Branding für die Echtzeit-Überwachung und Chat-Interaktion.
 
-### 🤖 KI-Ready
-- Volle Kompatibilität mit **LangGraph** für komplexe Workflow-Automatisierung.
-- Nahtlose Integration in die **Claude Desktop App**.
+## ✨ Verfügbare MCP Tools
 
-## 🛠 Technologie-Stack
-- **Sprache**: Python 3.10+
-- **Framework**: [FastMCP](https://github.com/jlowin/fastmcp)
-- **Datenbank**: SQLite (Mocking des Neo42 Backends)
-- **Protokoll**: Model Context Protocol (MCP)
+| Tool | Beschreibung | Datenquelle |
+| :--- | :--- | :--- |
+| `start_employee_onboarding` | Initiiert Workflows für neue Mitarbeiter | Logic Engine |
+| `identify_reclaimable_licenses` | Findet ungenutzte Software-Lizenzen | SQLite |
+| `get_server_telemetry` | Ruft Echtzeit-Leistungsdaten ab | MongoDB |
+| `check_license_compliance` | Prüft Lizenzlimits vs. Installationen | SQLite |
+| `check_rental_availability` | Prüft Bestände im Service Management Depot | SQLite |
+| `get_package_status` | Status von Software-Deployments (APC) | SQLite |
 
-## 📦 Installation & Setup
+## 🛠 Installation & Setup
 
 1. **Repository klonen**:
    ```bash
@@ -39,52 +41,25 @@ Der Neo42 MCP Server schließt die Lücke zwischen Large Language Models (LLMs) 
    cd MPC-Server-Neo42
    ```
 
-2. **Virtuelle Umgebung erstellen**:
+2. **Setup-Skript**:
    ```bash
    python3 -m venv venv
    source venv/bin/activate
+   pip install fastmcp sqlite3 mongomock streamlit pandas plotly langchain-google-genai langgraph
    ```
 
-3. **Abhängigkeiten installieren**:
-   ```bash
-   pip install fastmcp sqlite3
-   ```
-
-4. **Datenbank initialisieren**:
+3. **Datenbanken initialisieren**:
    ```bash
    python3 database.py
    ```
 
-## 🖥 Nutzung
+4. **Dashboard starten**:
+   ```bash
+   streamlit run app.py
+   ```
 
-### MCP Server starten
-```bash
-python3 server.py
-```
-
-### Demo-Client ausführen
-Um die Tools in Aktion zu sehen, starten Sie den mitgelieferten Demo-Client:
-```bash
-python3 client_demo.py
-```
-
-## ⚙️ Konfiguration für Claude Desktop
-
-Fügen Sie Folgendes zu Ihrer `claude_desktop_config.json` hinzu:
-
-```json
-{
-  "mcpServers": {
-    "neo42-server": {
-      "command": "/PFAD/ZU/DEINEM/VENV/bin/python",
-      "args": ["/PFAD/ZU/DEINEM/PROJEKT/server.py"]
-    }
-  }
-}
-```
-
-## 🎯 Warum dieses Projekt?
-Dieses Projekt wurde als technisches Demo für **Neo42** entwickelt, um das Potenzial von KI-gestütztem Enterprise Service Management (ESM) zu demonstrieren. Es zeigt, wie moderne Protokolle wie MCP die Effizienz im IT-Support und in der Infrastrukturverwaltung drastisch steigern können.
+## 🎯 Vision
+Dieser Prototyp demonstriert, wie Neo42-Kunden durch den Einsatz von KI-Agenten die operative Effizienz steigern können. Er transformiert komplexe ESM-Daten in handlungsorientierte Erkenntnisse.
 
 ---
 **Entwickelt von [Maksym Doroshenko](https://github.com/MaksymDoroshenkoDCI)**
