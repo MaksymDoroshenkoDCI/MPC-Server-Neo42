@@ -5,3 +5,4 @@ __pycache__/
 # neo42_apc.db  # Keeping this for now since it's a demo repo, but normally ignored
 presentation_pitch.txt
 .env
+email_to_altmann.txt
