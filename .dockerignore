@@ -1,0 +1,14 @@
+venv/
+.git/
+.gitignore
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.db
+.DS_Store
+.env
+presentation_pitch.txt
+email_to_altmann.txt
+presentation_cologne_neo42.txt
+jobcenter_letter.txt

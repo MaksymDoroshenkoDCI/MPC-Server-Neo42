@@ -80,7 +80,7 @@ def get_db_data(query):
 # MCP Client Wrapper (Async)
 async def call_mcp_tool(tool_name, arguments={}):
     server_params = StdioServerParameters(
-        command="venv/bin/python",
+        command="python",
         args=["server.py"],
         env=None
     )
