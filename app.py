@@ -209,6 +209,11 @@ if prompt := st.chat_input("Ask about packages, servers or rentals..."):
                     elif "license" in prompt.lower():
                         pkg = "Adobe" if "adobe" in prompt.lower() else "Chrome"
                         tool_context = asyncio.run(call_mcp_tool("check_license_compliance", {"package_name": pkg}))
+                    elif "ticket" in prompt.lower() or "incident" in prompt.lower() or "issue" in prompt.lower():
+                        tool_context = asyncio.run(call_mcp_tool("create_incident_ticket", {"title": "Automated Deployment Failure Report", "description": "System detected a failure in recent deployment pipeline.", "priority": "High"}))
+                    elif "vulnerability" in prompt.lower() or "security" in prompt.lower() or "cve" in prompt.lower():
+                        pkg = "Adobe" if "adobe" in prompt.lower() else "Chrome"
+                        tool_context = asyncio.run(call_mcp_tool("check_cve_vulnerabilities", {"package_name": pkg}))
                     
                     agent = build_neo42_agent(api_key)
                     full_prompt = prompt

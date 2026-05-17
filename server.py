@@ -212,6 +212,40 @@ def start_employee_onboarding(employee_name: str, department: str) -> str:
     return plan
 
 @mcp.tool()
+def create_incident_ticket(title: str, description: str, priority: str = "Medium") -> str:
+    """
+    Creates an incident ticket in the Matrix42 Service Desk.
+    
+    Args:
+        title: Short summary of the incident.
+        description: Detailed description of the problem.
+        priority: Priority of the ticket (Low, Medium, High, Critical).
+    """
+    import uuid
+    ticket_id = f"INC-{str(uuid.uuid4())[:8].upper()}"
+    return f"Ticket successfully created in Matrix42 Service Desk.\n- Ticket ID: {ticket_id}\n- Title: {title}\n- Priority: {priority}\n- Status: New\n- Description: {description}"
+
+@mcp.tool()
+def check_cve_vulnerabilities(package_name: str) -> str:
+    """
+    Simulates checking a software package against a CVE (Common Vulnerabilities and Exposures) database.
+    
+    Args:
+        package_name: Name of the software package.
+    """
+    vulnerabilities = {
+        "Adobe": "CRITICAL: CVE-2026-1045 (Buffer Overflow in PDF parsing). Patch v2024.002 available.",
+        "Chrome": "WARNING: CVE-2026-0881 (V8 Engine Exploit). Update recommended.",
+        "Teams": "SAFE: No known critical vulnerabilities in the current deployed version."
+    }
+    
+    for key in vulnerabilities:
+        if key.lower() in package_name.lower():
+            return f"Security Scan Result for '{package_name}':\n{vulnerabilities[key]}"
+            
+    return f"Security Scan Result for '{package_name}': SAFE. No known vulnerabilities found."
+
+@mcp.tool()
 def get_recent_pipelines() -> str:
     """
     Retrieves the status of recent deployment pipelines.
