@@ -21,28 +21,40 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for Neo42 Red/Black Theme
+# Custom CSS for Neo42 Dark Premium Theme
 st.markdown("""
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+    
     .stApp {
-        background-color: #f0f2f6;
+        background-color: #0b0c10;
+        font-family: 'Outfit', sans-serif;
+        color: #c5c6c7;
     }
     [data-testid="stMetric"] {
-        background-color: #ffffff;
+        background-color: #1f2833;
         padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        border: 1px solid #1f2833;
         border-left: 5px solid #d71920;
+        transition: transform 0.2s ease-in-out;
     }
-    h1, h2, h3 {
-        color: #1a1a1a !important;
-        font-family: 'Helvetica Neue', sans-serif;
+    [data-testid="stMetric"]:hover {
+        transform: translateY(-5px);
+        border-color: #d71920;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        color: #ffffff !important;
+        font-family: 'Outfit', sans-serif;
+        font-weight: 600;
     }
     .stChatFloatingInputContainer {
-        background-color: #f0f2f6;
+        background-color: #0b0c10;
     }
     [data-testid="stSidebar"] {
-        background-color: #1a1a1a;
+        background-color: #1f2833;
+        border-right: 1px solid #d71920;
     }
     [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] p {
         color: #ffffff !important;
@@ -51,21 +63,49 @@ st.markdown("""
         background-color: #d71920;
         color: white;
         border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: all 0.3s ease;
     }
     .stButton>button:hover {
-        background-color: #b3151a;
-        color: white;
+        background-color: #ffffff;
+        color: #d71920;
+        box-shadow: 0 0 10px rgba(215, 25, 32, 0.5);
     }
     [data-testid="stMetricValue"] {
-        color: #d71920 !important;
+        color: #ffffff !important;
+        font-size: 2rem !important;
+        font-weight: 800 !important;
     }
     [data-testid="stMetricLabel"] {
-        color: #1a1a1a !important;
-        font-weight: bold !important;
+        color: #c5c6c7 !important;
+        font-weight: 600 !important;
+        font-size: 0.9rem !important;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
-    /* Black text for chat messages */
+    /* White text for chat messages in dark mode */
     [data-testid="stChatMessage"] p {
-        color: #000000 !important;
+        color: #ffffff !important;
+    }
+    [data-testid="stChatMessage"] {
+        background-color: #1f2833 !important;
+        border-radius: 10px !important;
+        border: 1px solid #1f2833 !important;
+        margin-bottom: 10px !important;
+    }
+    [data-testid="stChatMessage"]:nth-child(even) {
+        border-left: 4px solid #d71920 !important;
+    }
+    /* Input field styling */
+    .stTextInput input {
+        background-color: #1f2833 !important;
+        color: #ffffff !important;
+        border: 1px solid #c5c6c7 !important;
+    }
+    .stTextInput input:focus {
+        border-color: #d71920 !important;
+        box-shadow: 0 0 5px rgba(215, 25, 32, 0.5) !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -152,6 +192,14 @@ with left_col:
         """)
         fig = px.bar(status_df, x="location", y="count", color="status", barmode="group",
                      color_discrete_map={'Success': '#10b981', 'Failed': '#d71920', 'In Progress': '#f59e0b'})
+        fig.update_layout(
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            font_color='#ffffff',
+            xaxis=dict(gridcolor='#1f2833', title_font=dict(color='#ffffff'), tickfont=dict(color='#c5c6c7')),
+            yaxis=dict(gridcolor='#1f2833', title_font=dict(color='#ffffff'), tickfont=dict(color='#c5c6c7')),
+            legend=dict(font=dict(color='#ffffff'))
+        )
         st.plotly_chart(fig, use_container_width=True)
     except:
         st.info("Waiting for deployment data...")
